@@ -1,77 +1,74 @@
-# Hands‑On IT Support Portfolio #
+# Active Directory & Enterprise IT Support Home Lab
 
-### Welcome! This repository contains a structured portfolio of hands‑on labs and troubleshooting exercises designed to showcase my IT support skills across a range of technologies. I built these labs to simulate the real‑world tasks of a service desk technician or junior system administrator and to provide concrete evidence of my abilities when speaking with recruiters and hiring managers. Each section below summarizes the focus of the lab series.
+## 📌 Project Overview
+This project demonstrates the design, deployment, and administration of a virtualized Windows Server Active Directory enterprise network. Built using VMware Workstation, this lab models a corporate IT infrastructure featuring centralized domain management, role-based access control (RBAC), network file sharing with NTFS/Share permissions, automated Group Policy Objects (GPOs), and IT Service Management (ITSM) ticketing using Jira.
 
-### Overview
+---
 
-This portfolio demonstrates proficiency in:
+## 🏗 Network & Lab Architecture
 
-Windows Server administration – Active Directory setup, file sharing, group policy management and user account administration.
+### Environment Details
+* **Hypervisor:** VMware Workstation
+* **Domain Controller:** Windows Server 2019 Datacenter (`TechWorld.com` / `SHIINE`)
+* **Client Operating System:** Windows 10 Enterprise
+* **IP Scheme:** Static IP (`192.168.1.129/24`) for Domain Controller & Preferred DNS
+* **Security & Testing OS:** Kali Linux
 
-Microsoft 365 management – Creating and managing user groups and accounts in the cloud environment.
+---
 
-Troubleshooting scenarios – Diagnosing and resolving network connectivity issues, account lockouts, password resets, software installation problems and printer configuration.
+## 🛠️ Implementation & Technical Tasks
 
-Networking labs (CCNA) – VLAN and subnetting exercises to build foundational networking knowledge.
+### 1. Active Directory Domain Services (AD DS) Setup
+* Installed and configured **Active Directory Domain Services (AD DS)** and **DNS Server** roles on Windows Server 2019.
+* Configured the forest root domain: `TechWorld.com`.
+* Assigned a static IP address (`192.168.1.129`) to the Domain Controller and directed network interfaces to use it as the primary DNS server.
+* Verified domain connectivity using `nslookup` and `ping` commands from Windows 10 client machines.
 
-Documentation & remote tools – Using Jira and remote‑desktop tools to document and resolve service requests.
+### 2. Organizational Structure & User Management
+Designed a structured Active Directory layout reflecting departmental hierarchy:
+* **OU Structure:** Created Organizational Units (OUs) for geographical and functional divisions (e.g., `Deutschland`, `IT-Support`, `Sales`).
+* **Role-Based Access Control (RBAC):** Created targeted Security Groups (`IT-Support-Users`, `Sales`) rather than assigning permissions directly to individual users.
+* **User Onboarding:**
+  * Provisioned domain users (e.g., `Anna` as IT Support Department Manager, `Alisa` in Sales).
+  * Enforced initial logon password changes and domain profile setups.
 
-Each lab folder contains screenshots of the steps taken and the final configurations. The screenshots serve as evidence of the tasks completed; the text below provides context and explains what each lab accomplished.
+### 3. Network File Sharing & Security Permissions
+Implemented network file shares with secure privilege segregation on dedicated storage volumes (`CompanyShares E:`):
+* **Sales Share (`\\SHIINE\Sales`):** Configured with Share and NTFS permissions granting Read/Write access strictly to members of the `Sales` security group.
+* **IT-Support Share (`\\SHIINE\IT-Support`):** Secured with Modify and Read/Execute permissions restricted to `IT-Support-Users`.
+* **Verification:** Logged into client nodes as specific domain users (`techworld\alisa`, `techworld\anna`) to confirm proper grant/deny authorization behavior.
 
-Part 1 – Windows Server Labs
+### 4. Group Policy Management (GPO)
+Created and enforced targeted GPOs to strengthen system security and restrict unauthorized configuration changes:
+* **Password Security Policy:**
+  * Minimum password length: 8 characters.
+  * Maximum password age: 60 days.
+  * Password complexity requirements: Enabled.
+* **Sales Desktop Restriction GPO:**
+  * Enforced **"Prohibit access to Control Panel and PC settings"** linked to the `Sales` OU.
+  * Verified policy propagation on client endpoints using `gpupdate /force` and confirmed restrictions via user session error prompts.
 
-These labs focus on common on‑premises server tasks:
+### 5. Helpdesk Operations & ITSM Documentation (Jira)
+Simulated real-world Level 1/2 IT Support workflow operations:
+* Handled password resets and account unlock requests for domain users.
+* Maintained ticket logging, categorization, prioritization, and resolution documentation within Jira to align with ITSM best practices.
 
-Lab	Skills Demonstrated
-AD‑Setup	Installing and configuring Active Directory Domain Services (ADDS), promoting a server to a domain controller and creating organizational units.
-Files‑Sharing	Creating and managing shared folders, assigning NTFS and share permissions, and testing access from client machines.
-Group‑Policy	Designing and applying Group Policy Objects (GPOs) to enforce security settings and deploy software across the domain.
-User‑Management	Creating, modifying and disabling user accounts; resetting passwords; and delegating administrative permissions within AD.
+---
 
-Each of these sub‑directories includes a Screenshots folder that captures every step taken.
+## 🧪 Verification & Testing Results
 
-Part 2 – Microsoft 365 Labs
+| Test Scenario | Executed Command / Action | Expected Result | Outcome |
+| :--- | :--- | :--- | :--- |
+| **Domain Join** | System Properties -> Join `TechWorld.com` | "Welcome to the TechWorld.com domain" message | **PASS** |
+| **DNS Resolution** | `nslookup TechWorld.com` | Resolves to IP `192.168.1.129` | **PASS** |
+| **User Identity** | `whoami` | Displays `techworld\alisa` or `techworld\anna` | **PASS** |
+| **File Access Control** | Access `\\SHIINE\Sales` as `techworld\alisa` | Access granted; file creation successful (`Alisa2026.txt`) | **PASS** |
+| **GPO Restriction** | Open Control Panel as `techworld\alisa` | Blocked by system restriction message | **PASS** |
 
-This section shifts to cloud‑based administration:
+---
 
-Group‑Setup – Creating security and distribution groups in Microsoft 365, assigning users to groups and configuring group settings.
-
-User‑Management – Provisioning new users, resetting passwords and managing licenses in the Microsoft 365 admin center.
-
-Screenshots demonstrate how to navigate the admin portal and complete each task.
-
-Part 3 – Troubleshooting Scenarios
-
-Real‑world troubleshooting is a core part of support work. This series addresses common issues:
-
-Internet slow & network connectivity: diagnosing connectivity problems, checking cables and NIC settings, identifying bandwidth hogs and resolving DNS/DHCP issues.
-
-User account locked & password reset: unlocking accounts, resetting passwords via Active Directory or Microsoft 365 and updating security policies to prevent lockouts.
-
-Software not installing & printer issues: troubleshooting installer errors, managing compatibility settings, checking printer queues and reinstalling drivers.
-
-For each scenario, the screenshots document the problem‑solving process step by step.
-
-Part 4 – Networking Labs (CCNA)
-
-These labs provide foundational networking practice:
-
-Other‑Network Labs: configuring routers and switches, setting static and dynamic routes and testing connectivity between subnets.
-
-VLAN‑Subnetting: designing a network addressing scheme, creating VLANs, configuring trunk ports and verifying inter‑VLAN routing.
-
-Although the repository contains only screenshots, they illustrate the commands used and the topology diagrams drawn during the exercises.
-
-Part 5 – Tools for Documentation & Remote Assistance
-
-Good technicians document their work. This section highlights:
-
-Jira/Service Desk: capturing issue details, updating tickets with troubleshooting notes and resolving tasks in a professional workflow.
-
-Remote‑Desktop Tools: using remote support software to access user machines, perform troubleshooting and document actions taken.
-
-How to Use This Portfolio
-
-Each part of this repository is self‑contained. Browse to a section that interests you and open the Screenshots folder to view the visual record of my work. While the README.md files within individual labs are blank (the evidence is in the images), this master README explains the purpose and scope of each lab to give recruiters and hiring managers a clear picture of my capabilities.
-
-Thank you for reviewing my portfolio! I hope these labs demonstrate not only my technical skills but also my commitment to continuous learning and thorough documentation.
+## 💡 Key Takeaways & Skills Demonstrated
+* **System Administration:** Windows Server 2019 configuration, AD DS, DNS, GPO management.
+* **Network Security:** Principle of least privilege, NTFS vs. Share permissions, Group Policies.
+* **Client Troubleshooting:** Windows 10 domain joining, network folder mapping, command-line diagnostics (`whoami`, `ping`, `nslookup`, `gpupdate`).
+* **ITSM Processes:** Incident handling and ticketing workflows in Jira.
